@@ -1,0 +1,94 @@
+django-admin startproject Lesson4prj
+cd Lesson4prj
+
+python manage.py startapp less4App
+python manage.py migrate
+
+python manage.py runserver
+
+#Creating MODEL
+# Create your models here.
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
+class Employee(models.Model):
+    name = models.CharField(max_length=100)
+    dob = models.DateField()
+    did = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='department')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+		
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'less4App',
+]
+
+python manage.py makemigrations
+python manage.py migrate
+
+python manage.py createsuperuser
+
+from django.contrib import admin
+from .models import Department,Employee
+# Register your models here.
+admin.site.register(Department)
+admin.site.register(Employee)
+
+python manage.py shell
+
+from less4App.models import Department
+
+d1 = Department(name='HR')
+d1.save()
+
+d2 = Department(name='Accounts')
+d2.save()
+
+Department.objects.all()
+
+from less4App.models import Employee
+from datetime import date
+
+e1 = Employee(name="Nazmul", dob=date(2018, 3, 6), did=d1)
+e1.save()
+
+e2 = Employee(name="Saiful", dob=date(2018, 3, 16), did=d1)
+e2.save()
+
+Employee.objects.all()
+
+qset1 = Employee.objects.all()
+print(qset1.query)
+
+q4 = Employee.objects.order_by("id")
+print(q4.query)
+
+q5 = Employee.objects.order_by("-id")
+print(q5.query)
+
+q6 = Employee.objects.order_by('id')[1]
+print(q6.name)
+
+Department.objects.create(name='IT')
+me = Employee.objects.get(name='Nazmul')
+print(me)
+print(me.name)
+
+q7 = Employee.objects.filter(name="nazmul")
+print(q7.query)
+		
